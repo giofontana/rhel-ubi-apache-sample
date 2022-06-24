@@ -2,6 +2,7 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: set-image
+  namespace: sample-php-cicd
 spec:
   params:
     - name: k8s-deployment-path

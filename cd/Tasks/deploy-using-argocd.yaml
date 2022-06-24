@@ -2,20 +2,53 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: deploy-using-argocd
+  namespace: sample-php-cicd
 spec:
   workspaces:
   - name: source
   params:
-    - name: argocd_app_manifest
-      description: The manifest file that contains yaml manifests
+    - name: git-url
+      description: url of the git repo for the code of deployment
       type: string
+    - name: git-revision
+      type: string
+      description: revision to be used from repo of the code for deployment
+      default: "main"      
+    - name: application-name
+      type: string
+      description: ArgoCD application name      
+    - name: flags
+      default: --insecure
+      type: string          
+    - name: manifests-path
+      type: string
+      description: path where the k8s deployment manifests are
+      default: "k8s"         
+    - name: argocd-version
+      default: v2.2.2
+      type: string     
+    - name: k8s-dest-server
+      description: k8s cluster destination server    
+      default: https://kubernetes.default.svc
+      type: string     
+    - name: k8s-dest-namespace
+      description: k8s destination namespace    
+      default: default
+      type: string          
+  stepTemplate:
+    envFrom:
+      - configMapRef:
+          name: argocd-env-configmap  # used for server address
+      - secretRef:
+          name: argocd-env-secret  # used for authentication (username/password or auth token)       
   steps:
-    - name: apply
-      image: registry.redhat.io/openshift4/ose-cli:latest
-      workingDir: /workspace/source
-      command: ["/bin/bash", "-c"]
-      args:
-        - |-
-          echo Applying manifest $(inputs.params.argocd_app_manifest) to create ArgoCD Application
-          oc apply -f $(inputs.params.argocd_app_manifest)
-          echo -----------------------------------
+    - name: create-argocd-app
+      image: quay.io/argoproj/argocd:$(params.argocd-version)
+      script: |
+        if [ -z "$ARGOCD_AUTH_TOKEN" ]; then
+          yes | argocd login "$ARGOCD_SERVER" --username="$ARGOCD_USERNAME" --password="$ARGOCD_PASSWORD" "$(params.flags)";
+        fi
+        argocd app create "$(params.application-name)" --repo "$(params.git-url)" --revision "$(params.git-revision)" --path "$(params.manifests-path)" --dest-server "$(params.k8s-dest-server)" --dest-namespace "$(params.k8s-dest-namespace)" "$(params.flags)"
+        argocd app sync "$(params.application-name)" --revision "$(params.git-revision)" "$(params.flags)"
+        argocd app wait "$(params.application-name)" --health "$(params.flags)"
+

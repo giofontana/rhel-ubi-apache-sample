@@ -2,6 +2,7 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: acs-deployment-check
+  namespace: sample-php-cicd
 spec:
   params:
     - name: acs_central_endpoint

@@ -2,6 +2,7 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: check-app-health
+  namespace: sample-php-cicd
 spec:
   params:
     - name: deployment

@@ -1,7 +1,8 @@
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  name: deploy-remote-clusters
+  name: deploy-using-argocd
+  namespace: sample-php-cicd
 spec:
   workspaces:
   - name: shared-workspace
@@ -14,14 +15,19 @@ spec:
     type: string
     description: revision to be used from repo of the code for deployment
     default: "main"
-  - name: argocd_app_manifest
+  - name: manistests-path
     type: string
-    description: The directory in source that contains yaml manifests
-    default: "./cd/Argocd/sample-php-appset.yaml"
-  - name: argocd_config_dir
+    default: "k8s"
+  - name: application-name
     type: string
-    description: The directory in source that contains yamls to configure the GitOps cluster
-    default: "./cd/Argocd/configuration"    
+    description: Name of the ArgoCD Application
+    default: "sample-php"
+  - name: k8s-dest-server
+    type: string
+    default: "https://kubernetes.default.svc"    
+  - name: k8s-dest-namespace
+    type: string
+    default: "default"
   tasks:
   - name: fetch-repository
     taskRef:
@@ -39,22 +45,22 @@ spec:
       value: "true"
     - name: revision
       value: $(params.git-revision)
-  - name: configure-gitops-cluster
-    params:
-    - name: argocd_config_dir
-      value: $(params.argocd_config_dir)
-    taskRef:
-      kind: Task
-      name: configure-gitops-cluster
-    workspaces:
-    - name: source
-      workspace: shared-workspace
-    runAfter:
-    - fetch-repository      
   - name: deploy-using-argocd
     params:
-    - name: argocd_app_manifest
-      value: $(params.argocd_app_manifest)
+    - name: git-url
+      value: $(params.git-url)
+    - name: git-revision
+      value: $(params.git-revision)
+    - name: application-name
+      value: $(params.application-name)
+    - name: manifests-path
+      value: $(params.manistests-path)
+    - name: flags
+      value: --insecure
+    - name: k8s-dest-server
+      value: $(params.k8s-dest-server)
+    - name: k8s-dest-namespace
+      value: $(params.k8s-dest-namespace)
     taskRef:
       kind: Task
       name: deploy-using-argocd
@@ -62,4 +68,4 @@ spec:
     - name: source
       workspace: shared-workspace
     runAfter:
-    - configure-gitops-cluster
+    - fetch-repository
