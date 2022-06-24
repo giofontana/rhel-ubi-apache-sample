@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: sample-php
-          image: SAMPLE-PHP-IMAGE          
+          image: IMAGE          
           imagePullPolicy: IfNotPresent          
           ports:
             - containerPort: 8080
