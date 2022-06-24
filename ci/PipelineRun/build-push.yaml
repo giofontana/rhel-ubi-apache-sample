@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
-  name: build-push-v1.0
+  name: build-push
   namespace: sample-php-cicd
 spec:
   pipelineRef:
@@ -9,10 +9,12 @@ spec:
   params:
   - name: deployment-name
     value: sample-php
+  - name: git-revision
+    value: GIT-REVISION    
   - name: git-url
     value: https://github.com/giofontana/rhel-ubi-apache-sample.git
   - name: IMAGE
-    value: QUAY_HOST/demo/sample-php:v1.0
+    value: QUAY_HOST/demo/sample-php:latest
   - name: acs_central_endpoint
     value: acs-secret
   - name: acs_api_token
