@@ -14,7 +14,7 @@ spec:
   - name: git-revision
     type: string
     description: revision to be used from repo of the code for deployment
-    default: "main"
+    default: "workshop"
   - name: manistests-path
     type: string
     default: "k8s"
