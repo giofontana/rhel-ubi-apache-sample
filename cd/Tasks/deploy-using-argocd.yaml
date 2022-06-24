@@ -35,6 +35,10 @@ spec:
       description: k8s destination namespace    
       default: default
       type: string          
+    - name: timeout
+      description: timeout for sync wait, in seconds
+      default: "600"     
+      type: string      
   stepTemplate:
     envFrom:
       - configMapRef:
@@ -49,6 +53,7 @@ spec:
           yes | argocd login "$ARGOCD_SERVER" --username="$ARGOCD_USERNAME" --password="$ARGOCD_PASSWORD" "$(params.flags)";
         fi
         argocd app create "$(params.application-name)" --repo "$(params.git-url)" --revision "$(params.git-revision)" --path "$(params.manifests-path)" --dest-server "$(params.k8s-dest-server)" --dest-namespace "$(params.k8s-dest-namespace)" "$(params.flags)"
-        argocd app sync "$(params.application-name)" --revision "$(params.git-revision)" "$(params.flags)"
-        argocd app wait "$(params.application-name)" --health "$(params.flags)"
+        argocd app sync "$(params.application-name)" --revision "$(params.git-revision)" "$(params.flags)" --timeout "$(params.timeout)"
+        argocd app wait "$(params.application-name)" --health "$(params.flags)" --timeout "$(params.timeout)"
+
 
