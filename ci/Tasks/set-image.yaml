@@ -1,0 +1,33 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: set-image
+spec:
+  params:
+    - name: k8s-deployment-path
+      description: Path to the deployment yaml
+      type: string
+      default: k8s/deployment.yaml
+    - name: image
+      description: Image url
+      type: string
+  steps:
+    - name: set-image
+      image: registry.access.redhat.com/ubi8/ubi
+      resources: {}
+      command:
+        - /bin/bash
+        - -c
+        - |
+          set -e
+          echo "Setting image on deployment YAML"
+
+          FILE=$(params.k8s-deployment-path)
+          ESCAPED_IMAGE_PATH=$(printf '%s\n' "$(params.image)" | sed -e 's/[]\/$*.^[]/\\&/g');
+
+          sed -i s/IMAGE/${ESCAPED_IMAGE_PATH}/g /files/$FILE
+          
+      workingDir: /workspace
+  workspaces:
+  - name: files
+    mountPath: /files

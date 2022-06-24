@@ -4,6 +4,7 @@ kind: Kustomization
 resources:
 - namespace.yaml
 - Tasks/acs-deployment-check.yaml
+- Tasks/set-image.yaml
 - Pipeline/build-push.yaml
 #- PipelineRun/pvc.yaml
 #- PipelineRun/build-push-latest.yaml
