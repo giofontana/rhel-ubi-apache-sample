@@ -22,14 +22,21 @@ spec:
           set -e
           echo "Setting image on deployment YAML"
 
+          #microdnf -y install git > /dev/null 2>&1
+          dnf -y install git
+
+          cd /files
           FILE=$(params.k8s-deployment-path)
           ESCAPED_IMAGE_PATH=$(printf '%s\n' "$(params.image)" | sed -e 's/[]\/$*.^[]/\\&/g');
 
-          sed -i s/IMAGE/${ESCAPED_IMAGE_PATH}/g /files/$FILE
+          sed -i s/IMAGE/${ESCAPED_IMAGE_PATH}/g $FILE
 
-          git add /files/$FILE
+          CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+          git config --global user.email "demo@redhat.com"
+          git config --global user.name "Demo User"
+          git add $FILE
           git commit -m 'Set image'
-          git push
+          git push -u origin $CURRENT_BRANCH
           
       workingDir: /workspace
   workspaces:

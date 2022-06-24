@@ -53,21 +53,7 @@ spec:
     - name: deleteExisting
       value: "true"
     - name: revision
-      value: $(params.git-revision)
-  - name: set-image
-    params:
-    - name: k8s-deployment-path
-      value: $(params.manifests-location-in-git-repo)/deployment.yaml
-    - name: image
-      value: $(params.IMAGE)
-    taskRef:
-      kind: Task
-      name: set-image
-    workspaces:
-    - name: files
-      workspace: shared-workspace
-    runAfter:
-    - fetch-repository           
+      value: $(params.git-revision)       
   - name: security-check
     params:
     - name: acs_central_endpoint
@@ -85,7 +71,7 @@ spec:
     - name: files
       workspace: shared-workspace
     runAfter:
-    - set-image     
+    - fetch-repository     
   - name: build-and-push-image
     taskRef:
       name: buildah
