@@ -26,6 +26,10 @@ spec:
           ESCAPED_IMAGE_PATH=$(printf '%s\n' "$(params.image)" | sed -e 's/[]\/$*.^[]/\\&/g');
 
           sed -i s/IMAGE/${ESCAPED_IMAGE_PATH}/g /files/$FILE
+
+          git add /files/$FILE
+          git commit -m 'Set image'
+          git push
           
       workingDir: /workspace
   workspaces:
