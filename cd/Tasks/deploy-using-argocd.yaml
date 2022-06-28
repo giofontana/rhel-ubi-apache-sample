@@ -39,6 +39,10 @@ spec:
       description: timeout for sync wait, in seconds
       default: "600"     
       type: string      
+    - name: sync-policy
+      description: "Set the sync policy - one of: none, automated (aliases of automated: auto, automatic)"
+      default: "auto"
+      type: string      
   stepTemplate:
     envFrom:
       - configMapRef:
@@ -52,8 +56,8 @@ spec:
         if [ -z "$ARGOCD_AUTH_TOKEN" ]; then
           yes | argocd login "$ARGOCD_SERVER" --username="$ARGOCD_USERNAME" --password="$ARGOCD_PASSWORD" "$(params.flags)";
         fi
-        argocd app create "$(params.application-name)" --repo "$(params.git-url)" --revision "$(params.git-revision)" --path "$(params.manifests-path)" --dest-server "$(params.k8s-dest-server)" --dest-namespace "$(params.k8s-dest-namespace)" "$(params.flags)"
-        argocd app sync "$(params.application-name)" --revision "$(params.git-revision)" "$(params.flags)" --timeout "$(params.timeout)"
+        argocd app create "$(params.application-name)" --repo "$(params.git-url)" --revision "$(params.git-revision)" --path "$(params.manifests-path)" --dest-server "$(params.k8s-dest-server)" --dest-namespace "$(params.k8s-dest-namespace)" --sync-policy "$(params.sync-policy)" "$(params.flags)" 
+        #argocd app sync "$(params.application-name)" --revision "$(params.git-revision)" "$(params.flags)" --timeout "$(params.timeout)"
         argocd app wait "$(params.application-name)" --health "$(params.flags)" --timeout "$(params.timeout)"
 
 
