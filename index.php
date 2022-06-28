@@ -1,5 +1,5 @@
 <html>
 <body>
-<?php print "This is a sample using latest tag!\n" ?>
+<?php print "This is a sample!\n" ?>
 </body>
 </html>
