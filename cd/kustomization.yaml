@@ -6,5 +6,7 @@ resources:
 - Tasks/deploy-using-argocd.yaml
 - Tasks/configure-gitops-cluster.yaml
 - Pipeline/deploy-using-argocd.yaml
+- Argocd/gitopscluster.yaml
+- Argocd/sample-php-appset.yaml
 
 namespace: sample-php-cicd

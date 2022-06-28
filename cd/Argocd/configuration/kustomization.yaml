@@ -1,4 +1,0 @@
-resources:
-- gitopscluster.yaml
-- managedclusterset.yaml
-
