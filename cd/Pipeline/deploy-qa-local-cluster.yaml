@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  name: deploy-using-argocd
+  name: deploy-qa-local-cluster
   namespace: sample-php-cicd
 spec:
   workspaces:
@@ -27,7 +27,7 @@ spec:
     default: "https://kubernetes.default.svc"    
   - name: k8s-dest-namespace
     type: string
-    default: "default"
+    default: "sample-php"
   tasks:
   - name: fetch-repository
     taskRef:

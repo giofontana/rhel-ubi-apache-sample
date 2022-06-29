@@ -1,0 +1,39 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: deploy-prod
+  namespace: sample-php-cicd
+spec:
+  params:
+    - name: k8s-yaml-path
+      description: Path to the appset yaml
+      type: string
+      default: cd/Argocd/sample-php-appset.yaml
+  steps:
+    - name: create-applicationset
+      image: registry.redhat.io/openshift4/ose-cli:latest
+      script: |
+        oc apply -f /files/$(params.k8s-yaml-path)
+
+        echo "Waiting ApplicationSet deployment..."
+        timeout=0
+        timout_limit=60
+        status=$(oc get ApplicationSet/sample-php -n openshift-gitops -o jsonpath='{.status.conditions[?(@.type=="ResourcesUpToDate")].status}' || true)
+        while [ "$status" != "True" ]; do
+          echo "Waiting ApplicationSet deployment..."
+          sleep 10
+          if [ $timeout -gt $timout_limit ]; then
+            echo "Timeout reached... Check the status of the ApplicationSet on OpenShift."
+            exit 1
+          fi
+          timeout=$(($timeout+1))
+          status=$(oc get ApplicationSet/sample-php -n openshift-gitops -o jsonpath='{.status.conditions[?(@.type=="ResourcesUpToDate")].status}' || true)
+        done
+        sleep 60 # Waiting one minute more for API publishing
+        echo "ApplicationSet deployment finished!"        
+
+      workingDir: /workspace
+  workspaces:
+  - name: files
+    mountPath: /files
+

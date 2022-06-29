@@ -1,0 +1,48 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: deploy-prod-clusters
+  namespace: sample-php-cicd
+spec:
+  params:
+    - default: sample-php
+      description: name of the deployment to be patched
+      name: deployment-name
+      type: string
+    - default: 'https://github.com/giofontana/rhel-ubi-apache-sample.git'
+      description: url of the git repo for the code of deployment
+      name: git-url
+      type: string
+    - default: workshop
+      description: revision to be used from repo of the code for deployment
+      name: git-revision
+      type: string
+  tasks:
+    - name: fetch-repository
+      params:
+        - name: url
+          value: $(params.git-url)
+        - name: deleteExisting
+          value: 'true'
+        - name: revision
+          value: $(params.git-revision)
+      taskRef:
+        kind: ClusterTask
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: shared-workspace
+    - name: deploy-prod
+      params:
+        - name: k8s-yaml-path
+          value: cd/Argocd/sample-php-appset.yaml
+      runAfter:
+        - fetch-repository
+      taskRef:
+        kind: Task
+        name: deploy-prod
+      workspaces:
+        - name: files
+          workspace: shared-workspace
+  workspaces:
+    - name: shared-workspace

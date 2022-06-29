@@ -4,8 +4,8 @@ kind: Kustomization
 resources:
 - namespace.yaml
 - Tasks/deploy-using-argocd.yaml
-- Tasks/configure-gitops-cluster.yaml
-- Pipeline/deploy-using-argocd.yaml
+- Tasks/deploy-prod.yaml
+- Pipeline/deploy-qa-local-cluster.yaml
+- Pipeline/deploy-prod-clusters.yaml
 - Argocd/gitopscluster.yaml
 
-namespace: sample-php-cicd
