@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: sample-php
-          image: IMAGE          
+          image: quay-registry-quay-openshift-operators.apps.ocp-19.sandbox1233.opentlc.com/demo/sample-php:latest          
           imagePullPolicy: Always          
           ports:
             - containerPort: 8080

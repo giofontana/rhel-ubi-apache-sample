@@ -10,11 +10,11 @@ spec:
   - name: deployment-name
     value: sample-php
   - name: git-revision
-    value: GIT-REVISION    
+    value: workshop    
   - name: git-url
     value: https://github.com/giofontana/rhel-ubi-apache-sample.git
   - name: IMAGE
-    value: QUAY_HOST/demo/sample-php:v1.0
+    value: quay-registry-quay-openshift-operators.apps.ocp-19.sandbox1233.opentlc.com/demo/sample-php:v1.0
   - name: acs_central_endpoint
     value: acs-secret
   - name: acs_api_token
